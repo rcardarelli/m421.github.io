@@ -1,0 +1,244 @@
+---
+title: "Assigment 7"
+author: "Rachel Cardarelli"
+date: "October 28, 2019"
+---
+
+Question 1
+
+```{r}
+q1 <- function(x){
+  result <- x**2 + 3*x + 1
+  return(result)
+}
+q1(7)
+```
+
+Question 2
+
+```{r}
+q2 <- function(x){
+  result <- prod(x)
+  return(result)
+}
+q2(c(2,3,4))
+```
+
+Question 3
+
+```{r}
+q3 <- function(x){
+  y = 1
+  for (val in x){
+    y = y*val
+  }
+  return(y) 
+}
+q3(c(2,3,4))
+```
+
+Question 4
+
+```{r}
+#a
+x = matrix(c(1:9), nrow=3)
+a <- function(w){
+  z = 0
+  for (val in w){
+    z = z + (val-mean(w))**2
+  }
+  return(z)
+}
+apply(x, MARGIN=1, a)
+
+#b
+y = matrix(rnorm(10000), ncol = 100)
+
+b <- function(w){
+  z = 0
+  for (val in w){
+    if (val > 0) {
+      z = z + val
+    }
+  }
+  return(z)
+}
+
+answer <- apply(y, MARGIN = 1, b)
+
+#c
+answer <- apply(y, MARGIN = 1, a)
+#chi-square distribution
+hist(answer)
+
+#d
+z <- matrix(rnorm(3000), ncol = 1000)
+answer <- apply(z, MARGIN = 1, hist)
+```
+
+Question 5
+
+```{r}
+q5 <- function(v,n){
+  if(anyNA(v)){
+   v[is.na(v)] <- n
+   result <- v 
+  }
+  else{
+   result <- list(v,"There is no missing value.")
+  }
+  return(result)
+}
+q5(c(1,2,NA,4,5),3)
+q5(c(1,2,3),5)
+```
+
+Question 6
+
+```{r}
+q6 <- function(v){
+  if(anyNA(v)){
+   v[is.na(v)] <- mean(v, na.rm = TRUE)
+   result <- v
+  }
+  else{
+   result <- list(v,"There is no missing value.")
+  }
+  return(result)
+}
+q6(c(2,45,4))
+q6(c(NA, 3,6,7))
+```
+
+Question 7
+
+```{r}
+mode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+q7 <- function(v){
+  if(anyNA(v)){
+  v[is.na(v)] <- mode(v)
+  result <- v
+  }
+  else{
+   result <- list(v,"There is no missing value.")
+  }
+  return(result)
+}
+q7(c("Dog", "Dog", "it", "Cat"))
+```
+
+Question 8
+
+```{r}
+library(readr)
+titanic <- read.csv("C:/Users/student/Documents/Honors Thesis/titanic.csv")
+
+mode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+q8 <- function(df){
+  if(anyNA(df)){
+    for(i in names(df)){
+      if(is.numeric(df[[i]])){
+        df[is.na(df[[i]]),i] <- mean(df[[i]], na.rm = TRUE)
+      }
+      else{
+        df[is.na(df[[i]]),i] <- mode(df[[i]])
+      }
+    }
+    result <- anyNA(df)
+  }
+  else{
+   result <- "There is no missing value."
+  }
+  return(result)
+}
+q8(titanic)
+```
+
+Question 9
+
+```{r}
+library(ggplot2)
+
+q9 <- function(df, x, y){
+  ggplot(df, aes(x, fill = y)) + geom_bar() + labs(x=colnames(df)[x])
+}
+
+q9(titanic, titanic$Pclass, titanic$Sex)
+```
+
+Question 10
+
+```{r}
+titanic$Sex <- as.factor(titanic$Sex)
+titanic$Pclass <- as.factor(titanic$Pclass)
+titanic$Survived <- as.factor(titanic$Survived)
+titanic$Embarked <- as.factor(titanic$Embarked)
+is.factor(titanic$Survived)
+nlevels(titanic$Parch)
+q10 <- function(df){
+    indx = c()
+    for(i in names(df)){
+      if(is.factor(df[[i]])){
+        if(nlevels(df[[i]]) < 4){
+          indx = append(indx,i)
+        }
+      }
+  }
+  all <- expand.grid(p1 = indx, p2 = indx, stringsAsFactors = FALSE) 
+  perms <- all[apply(all, 1, function(x) {length(unique(x)) == 2}),]
+  for(i in 1:nrow(perms)){
+    show(ggplot(df, aes(df[[perms[i,1]]], fill = df[[perms[i,2]]])) + geom_bar() + labs(x=perms[i,1], fill = perms[i,2]))
+  }
+}
+
+q10(titanic)
+```
+
+Question 11
+
+```{r}
+titanic$PassengerId <- as.character(titanic$PassengerId)
+q11 <- function(df,k){
+  if(k==1){
+    q10(df)
+  }
+  if(k==2){
+    for(i in names(df)){
+      if(is.numeric(df[[i]])){
+        show(ggplot(df, aes(df[[i]])) + geom_density() + labs(x=i))
+      }
+    }
+  }
+  if(k==3){
+    indx1 = c()
+    for(i in names(df)){
+      if(is.factor(df[[i]])){
+        if(nlevels(df[[i]]) < 4){
+          indx1 = append(indx1,i)
+        }
+      }
+    }
+    indx2 = c()
+    for(i in names(df)){
+      if(is.numeric(df[[i]])){
+        indx2 = append(indx2,i)
+      }
+    }
+    all <- expand.grid(p1 = indx1, p2 = indx2, stringsAsFactors = FALSE) 
+    perms <- all[apply(all, 1, function(x) {length(unique(x)) == 2}),]
+    for(i in 1:nrow(perms)){
+      show(ggplot(df, aes(df[[perms[i,2]]], color = df[[perms[i,1]]])) + geom_density() + labs(x=perms[i,2], color = perms[i,1]))
+    }
+  }
+}
+
+q11(titanic,2)
+```
+
