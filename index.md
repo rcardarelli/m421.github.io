@@ -6,3 +6,4 @@
 ### [Assignment 8](rcardarelli.github.io/hw-8.html)
 ### [Assignment 9](rcardarelli.github.io/hw-9.html)
 ### [Assignment 10](rcardarelli.github.io/hw-10.html)
+### [Midterm](rcardarelli.github.io/midterm.html)
